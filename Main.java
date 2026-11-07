@@ -13,6 +13,9 @@ public class Main {
     private static final int IMG_SIZE  = 100;   // px — thumbnail inside the tile
     private static final int GAP       = 8;
 
+    //previous exported CSV 
+    private static File lastCsvDir = null;
+
     public static void main(String[] args) {
         // Creates the starting frame 
         JFrame frame = new JFrame("csv analyzer");
@@ -79,6 +82,9 @@ public class Main {
                 if (!filePath.toLowerCase().endsWith(".csv")) {
                     filePath += ".csv";
                 }
+                
+                lastCsvDir = new File(filePath).getParentFile();
+
                 CSVAnalyzer.exportToCSV(filePath);
                 JOptionPane.showMessageDialog(frame, "CSV Exported Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -92,6 +98,8 @@ public class Main {
 
             if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+
+            lastCsvDir = selectedFile.getParentFile();
         
             // Read data from CSVAnalyzer
             ArrayList<String[]> csvData = CSVAnalyzer.readCSV(selectedFile.getAbsolutePath());
@@ -114,14 +122,56 @@ public class Main {
             JTable table = new JTable(model);
             table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             JScrollPane scrollPane = new JScrollPane(table);
-            
-            // clears any previous table display so they don't stack up
-            frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-            frame.revalidate();
-            frame.repaint();
-            //clear image
+
+
+            JLabel preview = new JLabel("Select a row to preview label", SwingConstants.CENTER);
+            preview.setPreferredSize(new Dimension(0, 220));
+            preview.setBorder(BorderFactory.createTitledBorder("Label image"));
+            preview.setBackground(new Color(245, 245, 245));
+            preview.setOpaque(true);
+
+            JPanel previewPanel = new JPanel(new BorderLayout());
+            previewPanel.add(preview, BorderLayout.CENTER);
+            previewPanel.setPreferredSize(new Dimension(0, 240));
+
+            table.getSelectionModel().addListSelectionListener(ev -> {
+                if (ev.getValueIsAdjusting()) return;
+                int row = table.getSelectedRow();
+                if (row < 0) {
+                    preview.setIcon(null);
+                    preview.setText("Select a row to preview label");
+                    return;
+                }
+                Object idVal = table.getValueAt(row, 0); 
+                String id = idVal == null ? "" : idVal.toString().replaceAll("[^a-zA-Z0-9._-]", "_");
+
+                File scanDir = (lastCsvDir != null) ? new File(lastCsvDir, "scans") : new File("scans");
+                File img = findImage(scanDir, id);
+
+                if (img != null && img.exists()) {
+                    ImageIcon ic = new ImageIcon(img.getAbsolutePath());
+                    int maxW = Math.max(preview.getWidth(), 600);
+                    int maxH = 200;
+                    double s = Math.min((double) maxW / ic.getIconWidth(),
+                                        (double) maxH / ic.getIconHeight());
+                    int w = (int)(ic.getIconWidth()  * s);
+                    int h = (int)(ic.getIconHeight() * s);
+                    preview.setIcon(new ImageIcon(ic.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH)));
+                    preview.setText(null);
+                } else {
+                    preview.setIcon(null);
+                    preview.setText("No image found for Sample ID " + id);
+                }
+            });
+
+    
+            JPanel csvView = new JPanel(new BorderLayout());
+            csvView.add(scrollPane, BorderLayout.CENTER);
+            csvView.add(previewPanel, BorderLayout.SOUTH);
+
+            // clears previous image display 
             contentPanel.removeAll();
-            contentPanel.add(scrollPane, BorderLayout.CENTER);
+            contentPanel.add(csvView, BorderLayout.CENTER);
             contentPanel.revalidate();
             contentPanel.repaint();
             }
@@ -160,5 +210,15 @@ public class Main {
         tile.add(img, BorderLayout.CENTER);
         tile.add(name, BorderLayout.SOUTH);
         return tile;
+    }
+
+    // Finds a file in scans/ whose basename (minus extension) matches the Sample ID
+    private static File findImage(File dir, String id) {
+        if (id == null || id.isEmpty()) return null;
+        File[] hits = dir.listFiles((d, n) -> {
+            String base = n.contains(".") ? n.substring(0, n.lastIndexOf('.')) : n;
+            return base.equals(id);
+        });
+        return (hits != null && hits.length > 0) ? hits[0] : null;
     }
 }
