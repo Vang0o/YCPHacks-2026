@@ -31,21 +31,33 @@ public class Main {
         importButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             
+            fileChooser.setMultiSelectionEnabled(true);
+            
             // Restrict the user to selecting only image files
             fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files (JPG, PNG, GIF)", "jpg", "jpeg", "png", "gif"));
             
+            
             // Open file window
             if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
+                File[] selectedFile = fileChooser.getSelectedFiles();
+                contentPanel.removeAll();
+                JPanel imageContainer = new JPanel();
+                imageContainer.setLayout(new BoxLayout(imageContainer, BoxLayout.Y_AXIS));
 
-            // Load and display the image
-            ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
-            Image scaledImage = imageIcon.getImage().getScaledInstance(-1, -1, Image.SCALE_SMOOTH);
-
+            // Load and display the images
+            for(File file : selectedFile) {
+            ImageIcon imageIcon = new ImageIcon(file.getAbsolutePath());
+            Image scaledImage = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+            ImageIcon scaledIcon = new ImageIcon(scaledImage);
+            
             JLabel imageLabel = new JLabel(imageIcon);
-            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            imageLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+            imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            imageContainer.add(imageLabel);
 
-            JScrollPane imageScroll = new JScrollPane(imageLabel);
+            }
+            JScrollPane imageScroll = new JScrollPane(imageContainer);
+            imageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
             contentPanel.add(imageScroll, BorderLayout.CENTER);
             contentPanel.revalidate();
