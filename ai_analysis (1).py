@@ -89,7 +89,7 @@ while not file_queue.empty():
         model=args.aipath,
         messages=[{
             'role': 'user',
-            'content': 'Describe this image, Look for 6 Categories and output their results in the format of (WhatItIs: Value), here is Categories: SampleID which looks like a barcode with a string of numbers underneath it, Date Sampled which has the words Date and then potentially a date, not always one, Machine which either has RN: UP and a string of numbers OR it is Equip Id(Please specifiy which one it is), Serial Number which says SN: and has a string of numbers and letters, and Reference Lube which says a string of text',
+            'content': 'Describe this image, Look for 6 Categories and output their results in the format of (WhatItIs: Value), at the end please provide a confidence rating in the answers. Here is Categories: SampleID which looks like a barcode with a string of numbers underneath it, Date Sampled which has the words Date and then potentially a date, not always one, Machine which either has RN: UP and a string of numbers OR it is Equip Id(Please specifiy which one it is), Serial Number which says SN: and has a string of numbers and letters, and Reference Lube which says a string of text',
             'images': [file_path]
         }],
     )
