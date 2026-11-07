@@ -25,7 +25,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null); 
         frame.setLayout(new BorderLayout());
-        frame.getContentPane().setBackground(Color.DARK_GRAY);   
+        frame.getContentPane().setBackground(new Color(0x2b2a33));  
 
         // Initializes buttons
         JButton importButton = new JButton("Import Image");
@@ -34,6 +34,7 @@ public class Main {
 
         JPanel contentPanel = new JPanel(new BorderLayout());
         frame.add(contentPanel, BorderLayout.CENTER);
+        contentPanel.setBackground(Color.DARK_GRAY);
 
         // Import Button functionality
         importButton.addActionListener(e -> {
@@ -58,10 +59,13 @@ public class Main {
             }
             JScrollPane imageScroll = new JScrollPane(imageContainer);
             imageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
+            
+            contentPanel.setBackground(Color.DARK_GRAY);
             contentPanel.add(imageScroll, BorderLayout.CENTER);
             contentPanel.revalidate();
             contentPanel.repaint();
+            imageContainer.setBackground(Color.DARK_GRAY);
+
 
                 
                 // pass file to ImageAnalysis here
@@ -120,6 +124,7 @@ public class Main {
             // Create the table and load the data
             DefaultTableModel model = new DefaultTableModel(rowData, headers);
             JTable table = new JTable(model);
+            //table.setBackground(new Color(#ba3be6));
             table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
             JScrollPane scrollPane = new JScrollPane(table);
 
@@ -127,12 +132,13 @@ public class Main {
             JLabel preview = new JLabel("Select a row to preview label", SwingConstants.CENTER);
             preview.setPreferredSize(new Dimension(0, 220));
             preview.setBorder(BorderFactory.createTitledBorder("Label image"));
-            preview.setBackground(new Color(245, 245, 245));
+            //preview.setBackground(255, 255, 255);
             preview.setOpaque(true);
 
             JPanel previewPanel = new JPanel(new BorderLayout());
             previewPanel.add(preview, BorderLayout.CENTER);
             previewPanel.setPreferredSize(new Dimension(0, 240));
+            
 
             table.getSelectionModel().addListSelectionListener(ev -> {
                 if (ev.getValueIsAdjusting()) return;
@@ -168,6 +174,7 @@ public class Main {
             JPanel csvView = new JPanel(new BorderLayout());
             csvView.add(scrollPane, BorderLayout.CENTER);
             csvView.add(previewPanel, BorderLayout.SOUTH);
+            
 
             // clears previous image display 
             contentPanel.removeAll();
@@ -180,6 +187,7 @@ public class Main {
 
         // bar for the buttons
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        controlPanel.setBackground(new Color(0xFF7139));
         controlPanel.add(importButton);
         controlPanel.add(exportButton);
         controlPanel.add(showCSVButton);
