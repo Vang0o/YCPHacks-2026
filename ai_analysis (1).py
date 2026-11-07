@@ -36,8 +36,11 @@ output json
 ###################################################
 
 # arguments
+from ollama import chat
+
 import argparse 
-from Qwen3_VL_Embedding_main.src.models.qwen3_vl_embedding import Qwen3VLEmbedder
+import json
+
 #path when downloading, replaced when not added at next step
 parser = argparse.ArgumentParser("")
 parser.add_argument("aipath", help="Path to the AI file")
@@ -77,21 +80,25 @@ def enqueue_files(file_paths):
   
 file_queue = enqueue_files(files)
 
-model = Qwen3VLEmbedder(model_name_or_path=args.aipath)
 
 # Process files from queue
 while not file_queue.empty():
     file_path = file_queue.get()
-    #change to what we need for it
-    inputs = [{"image": file_path}]
-    embeddings = model.process(inputs)
 
-###################################################
+    response = chat(
+        model=args.aipath,
+        messages=[{
+            'role': 'user',
+            'content': 'Describe this image, Look for 6 Categories and output their results in the format of (WhatItIs: Value), here is Categories: SampleID which looks like a barcode with a string of numbers underneath it, Date Sampled which has the words Date and then potentially a date, not always one, Machine which either has RN: UP and a string of numbers OR it is Equip Id(Please specifiy which one it is), Serial Number which says SN: and has a string of numbers and letters, and Reference Lube which says a string of text',
+            'images': [file_path]
+        }],
+    )
 
+    result = json.dumps({
+        "file": file_path,
+        "response": response.message.content
+    })
+    print(result)
 
-# output to file aioutput.log
-with open("aioutput.log", "a") as outputfile:
-  outputfile.write("aipath: " + args.aipath)
-  outputfile.write("image: " + args.image)
-  outputfile.write("video: " + args.video)
-
+    with open("aioutput.log", "a") as outputfile:
+        outputfile.write(result + "\n")
