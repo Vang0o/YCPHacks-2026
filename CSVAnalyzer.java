@@ -1,9 +1,11 @@
 import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
+import java.util.*;
 
 public class CSVAnalyzer {
     // Keep your original main method exactly as it is for console testing
@@ -66,4 +68,21 @@ public class CSVAnalyzer {
         if (end == -1) end = scan.length(); 
         return scan.substring(start, end).trim();
     }
+    //to display CSV in the app
+    public static ArrayList<String[]> readCSV(String fileName) {
+    ArrayList<String[]> data = new ArrayList<>();
+    
+    try (BufferedReader render = new BufferedReader(new FileReader(fileName))) {
+        String line;
+        while ((line = render.readLine()) != null) {
+            data.add(line.split(",", -1));
+        }
+    } catch (IOException e) {
+        System.out.println("Error reading file: " + e.getMessage());
+    }
+    
+    return data;
+}
+
+
 }
