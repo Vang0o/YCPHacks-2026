@@ -39,7 +39,23 @@ public class Main {
         
         //showCSVButton.addActionListener(null);
 
-        //exportButton.addActionListener(null);
+         exportButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save CSV File");
+            // Only shows .csv files 
+            fileChooser.setFileFilter(new FileNameExtensionFilter("CSV Files (*.csv)", "csv"));
+
+            if (fileChooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                String filePath = fileToSave.getAbsolutePath();
+                
+                if (!filePath.toLowerCase().endsWith(".csv")) {
+                    filePath += ".csv";
+                }
+                CSVAnalyzer.exportToCSV(filePath);
+                JOptionPane.showMessageDialog(frame, "CSV Exported Successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
         
         //bar for the button
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
