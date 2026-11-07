@@ -8,6 +8,11 @@ import java.io.File;
 import java.util.*;
 
 public class Main {
+
+    private static final int TILE_SIZE = 120;   // px — image + caption box
+    private static final int IMG_SIZE  = 100;   // px — thumbnail inside the tile
+    private static final int GAP       = 8;
+
     public static void main(String[] args) {
         // Creates the starting frame 
         JFrame frame = new JFrame("csv analyzer");
@@ -41,19 +46,11 @@ public class Main {
             if (fileChooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 File[] selectedFile = fileChooser.getSelectedFiles();
                 contentPanel.removeAll();
-                JPanel imageContainer = new JPanel();
-                imageContainer.setLayout(new BoxLayout(imageContainer, BoxLayout.Y_AXIS));
+                JPanel imageContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, GAP, GAP));
 
             // Load and display the images
             for(File file : selectedFile) {
-            ImageIcon imageIcon = new ImageIcon(file.getAbsolutePath());
-            Image scaledImage = imageIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-            
-            JLabel imageLabel = new JLabel(imageIcon);
-            imageLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-            imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-            imageContainer.add(imageLabel);
+            imageContainer.add(makeTile(file));
 
             }
             JScrollPane imageScroll = new JScrollPane(imageContainer);
@@ -143,5 +140,25 @@ public class Main {
 
         
     }
-}
 
+    private static JPanel makeTile(File file) {
+        JPanel tile = new JPanel(new BorderLayout(0, 4));
+        tile.setPreferredSize(new Dimension(TILE_SIZE, TILE_SIZE + 20));
+        tile.setBackground(new Color(245, 245, 245));
+        tile.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+
+        ImageIcon icon = new ImageIcon(file.getAbsolutePath());
+        Image scaled = icon.getImage().getScaledInstance(IMG_SIZE, IMG_SIZE, Image.SCALE_SMOOTH);
+        JLabel img = new JLabel(new ImageIcon(scaled));
+        img.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JLabel name = new JLabel(file.getName());
+        name.setHorizontalAlignment(SwingConstants.CENTER);
+        name.setFont(name.getFont().deriveFont(10f));
+        name.setToolTipText(file.getName());
+
+        tile.add(img, BorderLayout.CENTER);
+        tile.add(name, BorderLayout.SOUTH);
+        return tile;
+    }
+}
