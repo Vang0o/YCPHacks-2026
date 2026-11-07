@@ -130,6 +130,7 @@ public class Main {
             }
         });        
 
+
         // bar for the buttons
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         controlPanel.add(importButton);
