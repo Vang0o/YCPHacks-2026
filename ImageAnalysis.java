@@ -11,7 +11,7 @@ public class ImageAnalysis {
     private static final ArrayList<String> currentScans = new ArrayList<>();
 
     private static final String PYTHON_SCRIPT = "ai_analysis (1).py";
-    private static final String PYTHON_EXE = "/home/vang1/HackYCP/YCPHacks-2026/venv/bin/python3";
+    private static final String PYTHON_EXE = "python";
     private static final String MODEL_NAME = "lfm3-omni";
 
 
