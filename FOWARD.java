@@ -3,12 +3,13 @@ import java.util.Scanner;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.ContextInitializer;
 import org.slf4j.LoggerFactory;
+import java.util.*;
 
 // Reads aioutput.log and stores it as a variable
 public class FOWARD {
     
 
-    //list for later and output for next stage
+    //Variable Declaration
     static String list = "";
     String output = "";
 
@@ -33,6 +34,27 @@ public class FOWARD {
         scan.close();
 
 
+        String[] listSplit = list.split("[\\(\\)]");
+
+        
+        
+        
+
+
+
+
+
+
+        ArrayList<String> listList = new ArrayList<String>(
+            Arrays.asList(listSplit));
+                    listList.remove(0);
+                    listList.removeIf(s -> s.trim().matches("[,\\s]*"));
+                    listList.replaceAll(s -> s.replaceAll("[\"}]+$", "").trim());
+        OrganizeText(listList);
+
+
+
+
 
 
 
@@ -41,10 +63,9 @@ public class FOWARD {
 
 
     }
-    
-//Organizes the text and puts it into output
-    public static OrganizeText(){
-//not yet implemented
+
+    public static void OrganizeText(){
+        System.out.pjavrintln(listList);
     }
 
     
