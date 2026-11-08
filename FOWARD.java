@@ -1,8 +1,4 @@
 import java.io.*;
-import java.util.Scanner;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.ContextInitializer;
-import org.slf4j.LoggerFactory;
 import java.util.*;
 
 // Reads aioutput.log and stores it as a variable
@@ -14,7 +10,7 @@ public class FOWARD {
     String output = "";
 
   
-    public static void main(String[] args) throws FileNotFoundException{
+    public static void main(String[] args) throws Exception{
 
 // Declaring input
         StringBuilder input = new StringBuilder("");
@@ -52,6 +48,9 @@ public class FOWARD {
                     listList.replaceAll(s -> s.replaceAll("[\"}]+$", "").trim());
         OrganizeText(listList);
 
+        
+    new FileWriter("aioutput.log", false).close();  // erases the contents of the file
+
 
 
 
@@ -59,22 +58,22 @@ public class FOWARD {
 
 
 //run DeleteExtra and reset
-        DeleteExtra();
+   //     DeleteExtra();
 
 
     }
 
-    public static void OrganizeText(){
-        System.out.pjavrintln(listList);
-    }
+    public static void OrganizeText(ArrayList<String> listList) {
+    System.out.println(listList);
+}
 
     
 //DeleteExtra is going to be called at the end to clear the log, then reset it with ci.autoConfig
-    public static void DeleteExtra(){
-    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory(); 
-    ContextInitializer ci = new ContextInitializer(lc); 
-    lc.reset();
-    ci.autoConfig();
-}
-
+ //   public static void DeleteExtra(){
+ //  LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory(); 
+ //   ContextInitializer ci = new ContextInitializer(lc); 
+ //   lc.reset();
+ //   ci.autoConfig();
+//}
+//
 }
