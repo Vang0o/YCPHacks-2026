@@ -9,11 +9,31 @@ public class ImageAnalysis {
 
     private static final ArrayList<String> currentScans = new ArrayList<>();
 
-    // Tells java Where ai.py lives. 
     private static final String PYTHON_SCRIPT = "ai_analysis (1).py";
-    private static final String PYTHON_EXE = "/home/vang1/HackYCP/YCPHacks-2026/venv/bin/python3";  
-    //private static final String PYTHON_EXE = "python3"; //change to your local python directiory if no work
-    private static final String MODEL_NAME = "lfm3-omni";  // change depending on the model you want to use
+    private static final String PYTHON_EXE = "/home/vang1/HackYCP/YCPHacks-2026/venv/bin/python3";
+    private static final String MODEL_NAME = "lfm3-omni";
+
+    // Analyze every image in a folder
+    public static void analyzeFolder(File folder) {
+        if (folder == null || !folder.isDirectory()) {
+            System.err.println("Not a folder: " + folder);
+            return;
+        }
+
+        File[] files = folder.listFiles((dir, name) -> {
+            String lower = name.toLowerCase();
+            return lower.endsWith(".jpg") || lower.endsWith(".jpeg") ||
+                   lower.endsWith(".png") || lower.endsWith(".bmp") ||
+                   lower.endsWith(".gif");
+        });
+
+        if (files == null || files.length == 0) {
+            System.out.println("No images found in " + folder);
+            return;
+        }
+
+        analyzeAll(files);
+    }
 
     public static String analyze(File imageFile) {
         try {
@@ -22,22 +42,21 @@ public class ImageAnalysis {
                 MODEL_NAME,
                 "--image", imageFile.getAbsolutePath()
             );
-            pb.redirectErrorStream(true); 
+            pb.redirectErrorStream(true);
 
             Process proc = pb.start();
 
-            // ai.py prints one JSON line per file: {"file":"...","response":"..."}
             String scanLine = null;
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(proc.getInputStream()))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     line = line.trim();
-                    if (line.startsWith("{")) {          // the JSON result
+                    if (line.startsWith("{")) {
                         System.out.println("RAW JSON LINE: " + line);
                         scanLine = extractResponse(line);
                     } else {
-                        System.out.println("[ai.py] " + line);  
+                        System.out.println("[ai.py] " + line);
                     }
                 }
             }
@@ -55,41 +74,38 @@ public class ImageAnalysis {
         }
     }
 
-    // JSON extractor 
     private static String extractResponse(String json) {
-    // Find "response" key, skip whitespace, expect ':', skip whitespace, expect '"'
-    java.util.regex.Matcher m = java.util.regex.Pattern
-        .compile("\"response\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"")
-        .matcher(json);
-    if (!m.find()) return null;
-    String raw = m.group(1);
-    // Unescape JSON string escapes
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < raw.length(); i++) {
-        char c = raw.charAt(i);
-        if (c == '\\' && i + 1 < raw.length()) {
-            char n = raw.charAt(++i);
-            switch (n) {
-                case 'n': sb.append('\n'); break;
-                case 't': sb.append('\t'); break;
-                case 'r': sb.append('\r'); break;
-                case '"': sb.append('"'); break;
-                case '\\': sb.append('\\'); break;
-                case '/': sb.append('/'); break;
-                case 'u':
-                    if (i + 4 < raw.length()) {
-                        sb.append((char) Integer.parseInt(raw.substring(i+1, i+5), 16));
-                        i += 4;
-                    }
-                    break;
-                default: sb.append(n);
+        java.util.regex.Matcher m = java.util.regex.Pattern
+            .compile("\"response\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"")
+            .matcher(json);
+        if (!m.find()) return null;
+        String raw = m.group(1);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            if (c == '\\' && i + 1 < raw.length()) {
+                char n = raw.charAt(++i);
+                switch (n) {
+                    case 'n': sb.append('\n'); break;
+                    case 't': sb.append('\t'); break;
+                    case 'r': sb.append('\r'); break;
+                    case '"': sb.append('"'); break;
+                    case '\\': sb.append('\\'); break;
+                    case '/': sb.append('/'); break;
+                    case 'u':
+                        if (i + 4 < raw.length()) {
+                            sb.append((char) Integer.parseInt(raw.substring(i+1, i+5), 16));
+                            i += 4;
+                        }
+                        break;
+                    default: sb.append(n);
+                }
+            } else {
+                sb.append(c);
             }
-        } else {
-            sb.append(c);
-            }
+        }
+        return sb.toString().trim();
     }
-    return sb.toString().trim();
-}
 
     public static void analyzeAll(File[] files) {
         currentScans.clear();
@@ -106,4 +122,14 @@ public class ImageAnalysis {
     }
 
     public static void clear() { currentScans.clear(); }
+
+    // Example usage
+    public static void main(String[] args) {
+        if (args.length == 0) {
+            System.out.println("Usage: java ImageAnalysis <folder>");
+            return;
+        }
+        analyzeFolder(new File(args[0]));
+        System.out.println("Results: " + getCurrentScans());
+    }
 }
