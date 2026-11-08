@@ -4,7 +4,7 @@
 
 3. ollama pull lfm3-omni
 
-4***. *optional, is to set Ollama as a path* $env:Path += ";C:\Users\hammo_mp019af\AppData\Local\Programs\Ollama"
+4***. *optional, is to set Ollama as a path* $env:Path += ";%localappdata%\Programs\Ollama"
 
 5. python "ai_analysis (1).py" "lfm3-omni" --image "imagepath" --video "videopath" 
 
