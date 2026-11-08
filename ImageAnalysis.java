@@ -1,5 +1,6 @@
-import java.io.File;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,26 @@ public class ImageAnalysis {
     private static final String PYTHON_SCRIPT = "ai_analysis (1).py";
     private static final String PYTHON_EXE = "/home/vang1/HackYCP/YCPHacks-2026/venv/bin/python3";
     private static final String MODEL_NAME = "lfm3-omni";
+
+
+
+
+    public static void StartPython() {
+         try
+        {
+            // Command to create an external process
+            String command = "java FOWARD";
+
+            // Running the above command
+            Runtime run  = Runtime.getRuntime();
+            Process proc = run.exec(command);
+        }
+
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+            }
 
     // Analyze every image in a folder
     public static void analyzeFolder(File folder) {
@@ -45,7 +66,13 @@ public class ImageAnalysis {
             pb.redirectErrorStream(true);
 
             Process proc = pb.start();
+            
+            
+    
 
+
+
+            
             String scanLine = null;
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(proc.getInputStream()))) {
@@ -131,5 +158,8 @@ public class ImageAnalysis {
         }
         analyzeFolder(new File(args[0]));
         System.out.println("Results: " + getCurrentScans());
+
+        StartPython();
+        
     }
 }
