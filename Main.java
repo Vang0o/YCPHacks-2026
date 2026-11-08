@@ -65,10 +65,8 @@ public class Main {
             contentPanel.revalidate();
             contentPanel.repaint();
             imageContainer.setBackground(Color.DARK_GRAY);
-
-
-                
-                // pass file to ImageAnalysis here
+            
+            ImageAnalysis.analyzeAll(selectedFile);
 
             }
         });

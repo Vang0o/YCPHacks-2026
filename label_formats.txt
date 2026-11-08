@@ -1,0 +1,2 @@
+Large label,TYPE:LARGE,ID:,DATE:,EQUIP:,POINT:,,LUBE:
+Small label,TYPE:SMALL,ID:,DATE:,RN:,COMP:,SN:,
