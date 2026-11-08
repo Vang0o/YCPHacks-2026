@@ -25,11 +25,12 @@ public class CSVAnalyzer {
     }
 
     public static void exportToCSV(String fileName) {
-        // need to replace with real scans from ImageAnalysis 
-        String scan1 = "TYPE:LARGE | ID:53279869 | DATE:09/28/2026 | EQUIP:53279869 | POINT:420 NPF | LUBE:Adjusting side";
-        String scan2 = "TYPE:SMALL | ID:111329   | DATE:09/28/2026 | RN:UP 6509     | COMP:3 + GS    | SN:SN-88321";
-
-        exportToCSV(fileName, Arrays.asList(scan1, scan2));
+        List<String> scans = ImageAnalysis.getCurrentScans();
+        if (scans.isEmpty()) {
+            System.out.println("No images imported — nothing to export.");
+            return;
+        }
+        exportToCSV(fileName, scans);
     }
 
     public static void exportToCSV(String fileName, List<String> rawScans) {
@@ -39,7 +40,7 @@ public class CSVAnalyzer {
             for (String scan : rawScans) {
                 LabelConfig config = LabelFormats.findFor(scan);
                 if (config == null) {
-                    System.err.println("Unrecognized label format: " + scan);
+                    System.out.println("Unrecognized label format: " + scan);
                     continue;
                 }
                 pw.println(toCsvRow(processLabel(scan, config)));
